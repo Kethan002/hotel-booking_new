@@ -89,7 +89,7 @@ if (isset($_GET['id'])) {
         <nav>
         <ul>
                 <li><a href="../index.php">Home</a></li>
-                <li><a href="rooms/rooms.php">Rooms</a></li>
+                <li><a href="../rooms/rooms.php">Rooms</a></li>
                 <li><a href="../about.php">About</a></li>
                 <li><a href="../contact.php">Contact</a></li>
             </ul>
