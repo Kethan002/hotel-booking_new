@@ -1,22 +1,23 @@
 <?php
-require_once 'database.php';
+require_once 'database.php'; // Ensure this doesn't lead to recursive includes
 
+// Fetch all rooms
 function getRooms() {
     global $pdo;
-    $query = "SELECT * FROM rooms";
+    $query = "SELECT * FROM rooms"; // Make sure this query doesn't return too much data
     $stmt = $pdo->prepare($query);
     $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch as associative arrays
 }
 
-function saveBooking($roomId, $checkIn, $checkOut, $guests, $customerName, $customerEmail, $houseNo, $city, $state, $totalCost)
-{
+// Save booking to the database
+function saveBooking($roomId, $checkIn, $checkOut, $guests, $customerName, $customerEmail, $houseNo, $city, $state, $totalCost) {
     global $pdo;
-
-    $query = "INSERT INTO bookings (room_id, check_in, check_out, guests, customer_name, customer_email, house_no, city, state, total_cost) 
+    
+    $query = "INSERT INTO bookings (room_id, check_in, check_out, guests, customer_name, customer_email, house_no, city, state, total_cost)
               VALUES (:room_id, :check_in, :check_out, :guests, :customer_name, :customer_email, :house_no, :city, :state, :total_cost)";
-
-    $stmt = $pdo->prepare($query);
+    
+    $stmt = $pdo->prepare($query); // Properly prepare the query
     $stmt->bindParam(':room_id', $roomId, PDO::PARAM_INT);
     $stmt->bindParam(':check_in', $checkIn, PDO::PARAM_STR);
     $stmt->bindParam(':check_out', $checkOut, PDO::PARAM_STR);
@@ -28,18 +29,18 @@ function saveBooking($roomId, $checkIn, $checkOut, $guests, $customerName, $cust
     $stmt->bindParam(':state', $state, PDO::PARAM_STR);
     $stmt->bindParam(':total_cost', $totalCost, PDO::PARAM_INT);
 
-    $stmt->execute();
-
-    return $pdo->lastInsertId();
+    $stmt->execute(); // Execute the query
+    
+    return $pdo->lastInsertId(); // Return the last inserted ID
 }
 
 function getRoom($id) {
     global $pdo;
-    $query = "SELECT * FROM rooms WHERE id = :id";
+    $query = "SELECT * FROM rooms WHERE id = :id"; // Ensure this query is optimized
     $stmt = $pdo->prepare($query);
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+    return $stmt->fetch(PDO::FETCH_ASSOC); // Fetch only one row
 }
 
 function calculateTotalCost($checkIn, $checkOut, $roomPrice) {
@@ -47,12 +48,15 @@ function calculateTotalCost($checkIn, $checkOut, $roomPrice) {
     $end = new DateTime($checkOut);
     $interval = $start->diff($end);
     $nights = $interval->days;
-    return $nights * $roomPrice;
+    return $nights * $roomPrice; // Return the calculated cost
 }
 
 function bookRoom($roomId, $checkIn, $checkOut, $guests, $customerName, $customerEmail, $houseNo, $city, $state, $totalCost) {
     global $pdo;
-    $query = "INSERT INTO bookings (room_id, check_in, check_out, guests, customer_name, customer_email, house_no, city, state, total_cost) VALUES (:room_id, :check_in, :check_out, :guests, :customer_name, :customer_email, :house_no, :city, :state, :total_cost)";
+    
+    $query = "INSERT INTO bookings (room_id, check_in, check_out, guests, customer_name, customer_email, house_no, city, state, total_cost)
+              VALUES (:room_id, :check_in, :check_out, :guests, :customer_name, :customer_email, :house_no, :city, :state, :total_cost)";
+    
     $stmt = $pdo->prepare($query);
     $stmt->bindParam(':room_id', $roomId, PDO::PARAM_INT);
     $stmt->bindParam(':check_in', $checkIn, PDO::PARAM_STR);
@@ -119,7 +123,7 @@ function getBooking($bookingId) {
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-function updateBooking($bookingId, $checkIn, $checkOut, $guests, $customerName, $customerEmail, $houseNo, $city, $state, $totalCost) {
+function updateBooking($bookingId, $checkIn, $checkOut, $guests, $customerName, $customerEmail, $houseNo, $city, $state, $totalCost,$price){
     global $pdo;
     try {
         $query = "UPDATE bookings 
@@ -136,19 +140,19 @@ function updateBooking($bookingId, $checkIn, $checkOut, $guests, $customerName, 
 
         $stmt = $pdo->prepare($query);
         
-        $stmt->bindParam(':check_in', $checkIn);
-        $stmt->bindParam(':check_out', $checkOut);
+        $stmt->bindParam(':check_in', $checkIn, PDO::PARAM_STR);
+        $stmt->bindParam(':check_out', $checkOut, PDO::PARAM_STR);
         $stmt->bindParam(':guests', $guests, PDO::PARAM_INT);
-        $stmt->bindParam(':customer_name', $customerName);
-        $stmt->bindParam(':customer_email', $customerEmail);
+        $stmt->bindParam(':customer_name', $customerName, PDO::PARAM_STR);
+        $stmt->bindParam(':customer_email', $customerEmail, PDO::PARAM_STR);
         $stmt->bindParam(':house_no', $houseNo, PDO::PARAM_STR);
         $stmt->bindParam(':city', $city, PDO::PARAM_STR);
         $stmt->bindParam(':state', $state, PDO::PARAM_STR);
-$stmt->bindParam(':total_cost', $totalCost, PDO::PARAM_STR);
-$stmt->bindParam(':id', $bookingId, PDO::PARAM_INT);
+        $stmt->bindParam(':total_cost', $totalCost, PDO::PARAM_INT);
+        $stmt->bindParam(':id', $bookingId, PDO::PARAM_INT);
 
-$stmt->execute();
-} catch (PDOException $e) {
+        $stmt->execute();
+    } catch (PDOException $e) {
     echo "Error updating booking: " . $e->getMessage();
 }
 }
