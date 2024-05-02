@@ -106,7 +106,7 @@ if (isset($_GET['delete'])) {
             <h2>Statistics</h2>
             <p>Total Rooms: <?= $totalRooms ?></p>
             <p>Booked Rooms: <?= $totalBookedRooms ?></p>
-            <p>Total Revenue: ₹<?= $totalRevenue * 20 ?></p>
+            <p>Total Revenue: ₹<?= $totalRevenue  ?></p>
         </div>
         <div class="recent-bookings">
             <h2>Recent Bookings</h2>
@@ -135,7 +135,7 @@ if (isset($_GET['delete'])) {
                         <td><?= $booking['house_no'] ?></td>
                         <td><?= $booking['city'] ?></td>
                         <td><?= $booking['state'] ?></td>
-                        <td>₹<?= $booking['total_cost'] * 20 ?></td>
+                        <td>₹<?= $booking['total_cost'] ?></td>
                         <td>
                             <a href="edit_booking.php?id=<?= $booking['id'] ?>">Edit</a>
                             <a href="?delete=<?= $booking['id'] ?>" onclick="return confirm('Are you sure you want to delete this booking?')">Delete</a>
